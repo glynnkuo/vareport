@@ -36,6 +36,7 @@ sql_people_count = """
 if q_type == 'people_count':
     out_data['in'] = 0
     out_data['out'] = 0
+    #people in
     db_cursor.execute(sql_people_count%(
       'People In',
       q_from.strftime(datetime_format),
@@ -46,6 +47,7 @@ if q_type == 'people_count':
         out_data['cid'] = row[0]
         out_data['in']  = row[1]
 
+    #people out
     db_cursor.execute(sql_people_count%(
       'People Out',
       q_from.strftime(datetime_format),
