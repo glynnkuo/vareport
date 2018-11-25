@@ -77,6 +77,7 @@ def heatmap(form, db_cursor):
     return 'application/json', json.dumps(out_data)
     
 def heatmap_data(form, db_cursor):
+    q_hmid = form.getvalue('hmid')
     sql_heatmap_data = """
       SELECT b.Data
         FROM VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
@@ -84,8 +85,10 @@ def heatmap_data(form, db_cursor):
     """
     db_cursor.execute(sql_heatmap%q_hmid)
     row = db_cursor.fetchone()
+    out_data = {}
     if row:
-        out_data['data': row[0]]
+        out_data['heatmap_data'] = base64.b64encode(row[0])
+    return 'application/json', json.dumps(out_data)
 
     
 def main():
