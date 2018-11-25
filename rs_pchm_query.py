@@ -81,13 +81,15 @@ def heatmap_data(form, db_cursor):
     sql_heatmap_data = """
       SELECT b.Data
         FROM VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
-       WHERE b.MetaDataId = %d
+       WHERE b.MetaDataId = %s
     """
     db_cursor.execute(sql_heatmap%q_hmid)
     row = db_cursor.fetchone()
     out_data = {}
     if row:
         out_data['heatmap_data'] = base64.b64encode(row[0])
+    else:
+        out_data['error']= "hmid %s not fount"%q_hmid
     return 'application/json', json.dumps(out_data)
 
     
