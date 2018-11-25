@@ -33,6 +33,16 @@ def main()
            AND m.LocalTime BETWEEN '%s' AND '%s'
            AND m.DeviceId = '%s'
       GROUP BY m.DeviceId"""
+      
+    sql_heatmap = """
+        SELECT m.DeviceId, m.LocalTime, b.Data
+          FROM VAS_Retail_Package.dbo.VAS_IVS_MetaData AS m
+    INNER JOIN VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
+            ON m.RecordId = b.MetaDataId
+         WHERE m.Type = 'HeatMapMetaData'
+           AND m.LocalTime BETWEEN '%s' AND '%s'
+           AND m.DeviceId = '%s'
+    """
 
     if q_type == 'people_count':
         out_data['in'] = 0
@@ -60,7 +70,13 @@ def main()
             out_data['out'] = row[1]
 
     elif q_type == 'heatmap':
-        pass
+        db_cursor.execute(sql_heatmap%(
+          q_from.strftime(datetime_format),
+          q_to.strftime(datetime_format),
+          q_cid))
+        out_data['heatmap'] = []
+        while row = db_cursor.fetchone():
+            out_data['heatmap'].append({time: row[1], data: row[2]})
 
     body = json.dumps(out_data)
 
