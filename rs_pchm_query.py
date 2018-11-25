@@ -83,7 +83,7 @@ def heatmap_data(form, db_cursor):
         FROM VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
        WHERE b.MetaDataId = %s
     """
-    db_cursor.execute(sql_heatmap%q_hmid)
+    db_cursor.execute(sql_heatmap_data%q_hmid)
     row = db_cursor.fetchone()
     out_data = {}
     if row:
