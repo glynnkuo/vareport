@@ -87,10 +87,11 @@ def heatmap_data(form, db_cursor):
     row = db_cursor.fetchone()
     out_data = {}
     if row:
-        out_data['heatmap_data'] = base64.b64encode(row[0])
+        return 'application/octet-stream', row[0]
+        #out_data['heatmap_data'] = base64.b64encode(row[0])
     else:
         out_data['error']= "hmid %s not fount"%q_hmid
-    return 'application/json', json.dumps(out_data)
+        return 'application/json', json.dumps(out_data)
 
     
 def main():
