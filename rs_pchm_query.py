@@ -2,13 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import cgi
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 import json
 import pyodbc
 import datetime
+import base64
 
-def main()
+def main():
     db_ip     = '192.168.225.253'
     db_name   = 'VAS_Retail_Package'
     db_user   = 'sa'
@@ -35,14 +36,18 @@ def main()
       GROUP BY m.DeviceId"""
       
     sql_heatmap = """
-        SELECT m.DeviceId, m.LocalTime, b.Data
+        SELECT m.RecordId, m.LocalTime
           FROM VAS_Retail_Package.dbo.VAS_IVS_MetaData AS m
-    INNER JOIN VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
-            ON m.RecordId = b.MetaDataId
          WHERE m.Type = 'HeatMapMetaData'
            AND m.LocalTime BETWEEN '%s' AND '%s'
            AND m.DeviceId = '%s'
     """
+    sql_heatmap_data = """
+        SELECT b.Data
+          FROM VAS_Retail_Package.dbo.MAS_IVS_BinaryData AS b
+         WHERE b.MetaDataId = %d
+    """
+
 
     if q_type == 'people_count':
         out_data['in'] = 0
@@ -75,8 +80,16 @@ def main()
           q_to.strftime(datetime_format),
           q_cid))
         out_data['heatmap'] = []
-        while row = db_cursor.fetchone():
-            out_data['heatmap'].append({time: row[1], data: row[2]})
+        while True:
+            row = db_cursor.fetchone()
+            if not row:
+                break
+            out_data['heatmap'].append({'time': row[1].strftime(datetime_format), 'hmid': row[0]})
+    elif q_type == 'heatmap_data':
+        db_cursor.execute(sql_heatmap%q_hmid)
+        row = db_cursor.fetchone()
+        if row:
+            out_data['data': row[0]]
 
     body = json.dumps(out_data)
 
