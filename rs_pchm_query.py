@@ -113,9 +113,9 @@ def main():
         content_type, body = heatmap(form, db_cursor)
     elif q_type == 'heatmap_data':
         content_type, body = heatmap_data(form, db_cursor)
-    else
+    else:
         content_type = 'application/json'
-        body = json.dumps({'error': 'unknow command type'})
+        body = json.dumps({'error': 'unknown command type'})
 
     print "Status: 200 OK"
     print "Content-Type: %s"%content_type
